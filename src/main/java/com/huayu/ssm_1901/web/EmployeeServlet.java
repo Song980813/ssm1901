@@ -64,6 +64,7 @@ public class EmployeeServlet<pictureFile> {
                 wrapper.eq("dept_id",empl.getDeptId());
             }
         }
+        System.out.println("-------------------------");
         Page page1=new Page(page,limit);
         Page p=empService.selectPage(page1,wrapper);
         String sr=String.valueOf(p.getTotal());
