@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>授权</title>
+    <link rel="stylesheet" href="/layui/css/layui.css" media="all">
+</head>
+    <script src="/layui/layui.js"></script>
+    <script src="/js/jquery-3.4.1.min.js"></script>
+<body>
+<form class="layui-form" action="/buildAdd.do "  >
+    <div class="layui-form-item">
+        <label class="layui-form-label">职位:</label>
+        <div class="layui-input-block">
+            <select name="deptid" id="s1" lay-verify="required" STYLE="width: 80px">
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">权限：</label>
+        <div class="layui-input-block" id="checked">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script>
+    layui.use(['upload','jquery','form'], function(){
+        var upload = layui.upload;
+        var $=layui.jquery;
+        var form=layui.form;
+
+        $(function(){
+            $.ajax({
+                url: "/PostServlet/queryAll.do",
+                type: "get",
+                dataType: "json",
+                success: function(data){
+                    for (let i = 0; i <data.length ; i++) {
+                        $("#s1").append(new Option(data[i].pname,data[i].pid));
+                    }
+                    form.render();
+                }
+            });
+
+            $.ajax({
+                url: "/selectAll.do",
+                type: "get",
+                dataType: "json",
+                success: function(data){
+                    let ch='';
+                    for (let i = 0; i <data.length ; i++) {
+                        ch+=data[i].permission+"<input type='checkbox' name='permissionid' lay-skin='primary 'value='"+data[i].id+"'>";
+                    }
+                    $("#checked").html(ch);
+                    form.render();
+                }
+            });
+        });
+
+
+        form.on('submit(formDemo)', function(data){
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+        });
+    });
+</script>
+</body>
+</html>

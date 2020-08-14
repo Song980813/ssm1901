@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>修改 </title>
+</head>
+<link rel="stylesheet" href="/layui/css/layui.css" media="all">
+<script src="/layui/layui.js"></script>
+<body>
+<form class="layui-form" action="/test/updateOne.do">
+    <div class="layui-form-item">
+        <label class="layui-form-label">賬號：</label>
+        <div class="layui-input-block">
+            <input type="text" name="usernumber" th:value="${usernumber}" lay-verify="required|chars " STYLE="width: 180px" required  lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">姓名：</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" th:value="${emp.name}" required  lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">性别：</label>
+        <div class="layui-input-block">
+            <input type="radio" name="sex" value="男" title="男" th:checked="${emp.sex=='男'?true:false}">
+            <input type="radio" name="sex" value="女"  title="女" th:checked="${emp.sex=='女'?true:false}">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">年龄：</label>
+        <div class="layui-input-block">
+            <input type="text" name="age" th:value="${emp.age}" required  lay-verify="required" placeholder="请输入年龄" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">职位：</label>
+        <div class="layui-input-block" id="checked">
+            <input th:each="role:${list}"  type="checkbox"
+                   th:value="${role.pid}" th:checked="${#strings.contains(emp.postId, role.pid)}"
+                   th:text="${role.pname}">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">部门:</label>
+        <div class="layui-input-block">
+            <select name="deptId" id="s1" lay-verify="required">s
+                <option th:each="d:${list1}" th:value="${d.id}"
+                        th:selected="${emp.deptId==d.id?true:false}">[[${d.dname}]]</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+    <label class="layui-form-label">salary：</label>
+    <div class="layui-input-block">
+        <input type="text" name="salary" th:value="${emp.salary}" required  lay-verify="required" placeholder="请输入年龄" autocomplete="off" class="layui-input">
+    </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">证件照：</label>
+        <input type="hidden" name="identificationPhoto" id="in1" value="${emp.identificationPhoto}">
+        <div class="layui-upload">
+            <button type="button" class="layui-btn" id="test1">上传文件</button>
+            <div class="layui-upload-list layui-inline">
+                <img class="layui-upload-img" th:src="@{${emp.identificationPhoto}}" id="img" width="60px" height="50px">
+                <p id="demoText"></p>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script>
+    layui.use(['upload','jquery','form'], function(){
+        var upload = layui.upload;
+        var $=layui.jquery;
+        var form=layui.form;
+        var upload = layui.upload;
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#test1'
+            ,url: '/test/photoadd.do' //改成您自己的上传接口
+            ,done: function(res){
+                //如果上传失败
+                if(res.code > 0){
+                    return layer.msg('上传失败');
+                }else{
+                    $('#img').attr('src', res.data); //图片链接（base64）
+                    $('#in1').attr('value', res.data); //图片链接（base64）
+                }
+                //上传成功
+            }
+        });
+        form.on('submit(formDemo)', function(data){
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+        });
+    });
+</script>
+</body>
+</html>

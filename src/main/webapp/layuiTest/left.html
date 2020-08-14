@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>导航</title>
+    <link rel="stylesheet" href="/layui/css/layui.css" media="all">
+</head>
+
+
+<body>
+<script src="/layui/layui.js"></script>
+    <div  class="layui-elem-field layui-field-title"  >
+        <ul class="layui-nav layui-nav-tree" lay-filter="test">
+
+            <li class="layui-nav-item  layui-nav-itemed">
+                <a href="javascript:;">功能操作</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="/layuiTest/perimission.html" target="right">权限管理</a></dd>
+                    <dd><a href="/layuiTest/position.html" target="right">角色管理</a></dd>
+                    <dd><a href="/layuiTest/right1.html" target="right">主页信息</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="#">属性</a></li>
+            <li class="layui-nav-item"><a href="#">系统功能</a></li>
+        </ul>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd " default-lazy-init="true">
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- set the max upload size100MB -->
+        <property name="maxUploadSize">
+            <value>104857600</value>
+        </property>
+        <property name="maxInMemorySize">
+            <value>4096</value>
+        </property>
+    </bean>
+    <!--模板解析器-->
+    <bean id="templateResolver" class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+        <!--字符编码utf-8-->
+        <property name="characterEncoding" value="utf-8"></property>
+        <!--前缀 HTML文件存放地址-->
+        <!--<property name="prefix" value="/html/"></property>-->
+        <!--suffix，过滤请求，这里是处理所有以.html结尾的请求；简化代码-->
+        <!--<property name="suffix" value=".html"></property>-->
+        <!--是否缓存页面，开发时设置为false，这样就可以在不重启服务器的情况下刷新页面即可查看修改效果；-->
+        <property name="cacheable" value="false"></property>
+        <!--templateMode，模板设置为html；-->
+        <property name="templateMode" value="HTML"></property>
+    </bean>
+    <!--模板引擎-->
+    <bean name="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
+        <property name="templateResolver" ref="templateResolver"></property>
+    </bean>
+    <!--视图解析器-->
+    <bean class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
+        <!--解决中文乱码-->
+        <property name="characterEncoding" value="utf-8"></property>
+        <property name="templateEngine" ref="templateEngine"></property>
+    </bean>
+    <bean class="com.huayu.ssm_1901.error.ExceptionHandler"></bean>
+
+    <mvc:annotation-driven></mvc:annotation-driven>
+
+    <context:component-scan base-package="com.huayu.ssm_1901.web"></context:component-scan>
+
+
+    <bean id="lifecycleBeanPostProcessor"  class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+    <!--开启Shiro的注解，实现对Controller的方法级权限检查(如@RequiresRoles,@RequiresPermissions),需借助SpringAOP扫描使用Shiro注解的类,并在必要时进行安全逻辑验证-->
+    <!--配置以下两个bean即可实现此功能 -->
+    <!--Enable Shiro Annotations for Spring-configured beans. Only run after thelifecycleBeanProcessor has run -->
+    <bean  class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+           depends-on="lifecycleBeanPostProcessor" >
+        <property name="proxyTargetClass" value="true"/>
+    </bean>
+    <bean  class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager" />
+    </bean>
+</beans>

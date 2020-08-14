@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>角色管理</title>
+    <link rel="stylesheet" href="/layui/css/layui.css" media="all">
+</head>
+<body>
+<script src="/layui/layui.js"></script>
+
+<table id="demo" lay-filter="test"></table>
+<script type="text/html" id="toolbarDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="comeback"><i class="layui-icon layui-icon-return "></i></a>
+    <a class="layui-btn layui-btn-xs"  lay-event="add"><i class="layui-icon layui-icon-add-circle-fine"></i></a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="dels"><i class="layui-icon layui-icon-delete"></i></i></a>
+</script>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script>
+    layui.use(['table','form','jquery','layer'], function(){
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.jquery;
+        //第一个实例
+        table.render({
+            elem: '#demo'
+            ,height: 250
+            ,url: '/PostServlet/queryA.do' //数据接口
+            ,page: true //开启分页
+            ,toolbar: '#toolbarDemo'
+            ,cols: [[ //表头
+                {type:'checkbox'}
+               ,{type: 'numbers',title: '序列', width:80}
+               ,{field: 'pname', title: '角色', width:80}
+               ,{fixed: 'right',  title: '操作',width:180, align:'center', toolbar: '#barDemo'}
+            ]]
+        });
+        table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'add':
+                    layer.open({
+                            type: 2,
+                            title:'添加角色',
+                            area: ['530px', '510px'],
+                            shade: 0.8,
+                            closeBtn: 0,
+                            shadeClose: true,
+                            anim: 5,
+                            content: 'positionAdd.html'
+                        }
+                    );
+                    break;
+                case 'dels':
+                    var checkStatus=table.checkStatus('demo')
+                    var data=checkStatus.data//获取选中的表数据
+                    var deList=[];
+                    data.forEach(function(n,i){
+                        deList.push(n.id);//将ID放入数组
+                    });
+                    if(deList.length>0){
+                        layer.comfirm('确定删除所选项吗？',function (index) {
+                            $.ajax({
+                                url: '//.do',
+                                type:'post',
+                                dataType:'json',
+                                data:"id="+deList,
+                                success:function (data,statusText) {
+                                    alert(data.code)
+                                    if(data.code==='0'){
+                                        layer.msg('删除成功');
+                                        table.reload('demo',{});
+                                    }else{
+                                        layer.msg('删除失败');
+                                    }
+                                },
+                                'error':function () {
+                                    layer.msg('系统错误');
+                                }
+                            })
+                        })
+                    }else{
+                        layer.tips('请选择需要删除的行',$('#batchDel'),{
+                            tips:[3,'#5fb878']
+                        })
+                    }
+                    break;
+                case 'update':
+                    layer.msg('编辑');
+                    break;
+            };
+        });
+
+        table.on('tool(test)', function(obj) {
+            var da=obj.data;
+            if (obj.event == "edit") {
+                layer.open({
+                    type: 2,
+                    title: false,
+                    area: ['630px', '360px'],
+                    shade: 0.8,
+                    closeBtn: 0,
+                    shadeClose: true,
+                    anim: 5,
+                    content: '/PostServlet/queryone.do?id='+da.id //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });
+            } else if (obj.event === "del") {
+                $.ajax({
+                    url: "/test/delete.do?id="+obj.data.id,
+                    type: "get",
+                    dataType: "json",
+                    success: function (data) {
+                        alert(data)
+                        if (data=="yes") {
+                            layer.open({
+                                type: 2,
+                                content: '删除成功' //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                            });
+                            location.reload();
+                            table.reload("demo",{
+                                url: '/test/selectLay.do'
+                            });
+                        } else {
+                            layer.open({
+                                type: 2,
+                                anim: 5,
+                                content: '删除失败' //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                            });
+                        }
+                    }
+                });
+            }
+        });
+
+    });
+</script>
+
+</body>
+</html>
